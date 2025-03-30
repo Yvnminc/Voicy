@@ -31,6 +31,15 @@ const socket = io({
 // Show loading state while connecting
 showConnectionStatus('Connecting to server...', 'connecting');
 
+// Set initial language to Chinese
+if (languageSelect) {
+  languageSelect.value = 'zh-CN';
+  // Trigger the change event to update the server
+  setTimeout(() => {
+    languageSelect.dispatchEvent(new Event('change'));
+  }, 1000);
+}
+
 // Button click event handlers
 startBtn.addEventListener('click', () => {
   if (!isConnected) {
@@ -230,6 +239,25 @@ function addToTranscriptHistory(text, timestamp) {
 function appendToContinuousTranscript(text) {
   if (!text) return;
   
+  // Skip system messages - do not add them to the continuous transcript
+  const systemMessages = [
+    'Initializing microphone...',
+    'Listening...',
+    'Paused',
+    'Resumed',
+    'Stopped',
+    'Transcript history cleared',
+    'Failed to start recording',
+  ];
+  
+  // If the text includes any system message or error message, skip it
+  if (systemMessages.some(msg => text.includes(msg)) || 
+      text.includes('Error:') || 
+      text.includes('Recording error') ||
+      text.includes('RESTARTING REQUEST')) {
+    return;
+  }
+  
   // If not empty, add a space before new text
   if (continuousTranscriptText && !continuousTranscriptText.endsWith(' ')) {
     continuousTranscriptText += ' ';
@@ -248,6 +276,10 @@ socket.on('connect', () => {
   isConnected = true;
   showConnectionStatus('Connected', 'connected');
   updateUI();
+  
+  // Set language to Chinese as default
+  socket.emit('setLanguage', 'zh-CN');
+  
   // Request transcript history once connected
   socket.emit('getHistory');
 });
@@ -341,11 +373,14 @@ socket.on('transcriptHistory', (history) => {
   history.forEach(item => {
     if (item.text && item.isFinal && 
         !item.text.includes('RESTARTING REQUEST') && 
-        item.text !== 'Listening...' && 
-        item.text !== 'Paused' && 
-        item.text !== 'Resumed' && 
-        item.text !== 'Stopped' && 
-        item.text !== 'Transcript history cleared' &&
+        !item.text.includes('Initializing microphone...') &&
+        !item.text.includes('Listening...') && 
+        !item.text.includes('Paused') && 
+        !item.text.includes('Resumed') && 
+        !item.text.includes('Stopped') && 
+        !item.text.includes('Transcript history cleared') &&
+        !item.text.includes('Error:') &&
+        !item.text.includes('Recording error') &&
         item.text !== '') {
       addToTranscriptHistory(item.text, item.timestamp);
     }

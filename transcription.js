@@ -34,7 +34,7 @@ class Transcriber {
     this.recordingStream = null;
     this.onTranscription = onTranscription || this.defaultOnTranscription;
     this.transcriptHistory = [];
-    this.languageCode = 'en-US'; // Default language
+    this.languageCode = 'zh-CN'; // Default language set to Chinese
     this.audioProcess = null;
     
     // Create a temp directory for audio files if needed

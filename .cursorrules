@@ -1,0 +1,61 @@
+# Voicy Project Intelligence
+
+## Project Structure
+
+- The project follows a standard Node.js application structure with public assets and server-side code
+- Frontend code is in the `/public` directory
+- Backend transcription logic is in `transcription.js`
+- Socket.io is used for real-time communication between frontend and backend
+
+## Code Patterns
+
+### Frontend Patterns
+- Use DOM manipulation for UI updates
+- Socket.io event handlers for receiving real-time updates
+- Clear visual feedback for system status (connection, recording)
+- Filter system messages from user-facing displays
+
+### Backend Patterns
+- Platform-specific audio capture with fallback mechanisms
+- Error recovery with automatic restart for critical services
+- Socket.io events for bidirectional communication
+- Memory-based transcript history management
+
+## Naming Conventions
+- Use camelCase for JavaScript variables and functions
+- Use descriptive names for Socket.io events (`transcription`, `getHistory`)
+- CSS classes use kebab-case (`transcript-container`, `status-indicator`)
+
+## System Messages
+System messages that should be filtered from the continuous transcript:
+- "Initializing microphone..."
+- "Listening..."
+- "Paused"
+- "Resumed"
+- "Stopped"
+- "Transcript history cleared"
+- "Failed to start recording"
+- Any text containing "Error:" or "Recording error"
+- Any text containing "RESTARTING REQUEST"
+
+## Socket.io Events
+- `start`: Begin recording
+- `pause`: Pause recording
+- `resume`: Resume recording
+- `stop`: Stop recording
+- `clearHistory`: Clear transcript history
+- `getHistory`: Request transcript history
+- `setLanguage`: Change transcription language
+- `transcription`: Receive transcription results
+- `transcriptHistory`: Receive transcript history
+
+## Language Support
+- Default language is Chinese (zh-CN)
+- Language is set both on the frontend and backend
+- Language changes are made through the `setLanguage` Socket.io event
+
+## Development Process
+- Keep backend and frontend development separate until integration
+- Test changes on multiple platforms (Windows, macOS, Linux)
+- Focus on reliability and error recovery
+- Document all Socket.io events for clear API contracts 
