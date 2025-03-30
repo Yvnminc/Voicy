@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voicy - Real-time Transcription</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Voicy</h1>
+      <p class="subtitle">Real-time Speech-to-Text Transcription</p>
+    </header>
+    
+    <div class="language-selector">
+      <label for="language-select">Select Language:</label>
+      <select id="language-select">
+        <option value="en-US" selected>English (US)</option>
+        <option value="zh-CN">Chinese (Simplified)</option>
+      </select>
+    </div>
+    
+    <div class="controls">
+      <button id="startBtn" class="btn">Start</button>
+      <button id="pauseBtn" class="btn" disabled>Pause</button>
+      <button id="resumeBtn" class="btn" disabled>Resume</button>
+      <button id="stopBtn" class="btn" disabled>Stop</button>
+      <button id="clearBtn" class="btn">Clear</button>
+      <button id="copyBtn" class="btn copy-btn">
+        <i class="fas fa-copy"></i> Copy Text
+      </button>
+    </div>
+    
+    <div class="status">
+      <div id="statusIndicator" class="indicator"></div>
+      <span id="statusText">Ready</span>
+    </div>
+    
+    <div class="transcript-container">
+      <div id="liveTranscript" class="live-transcript"></div>
+      <div id="continuousTranscript" class="continuous-transcript">
+        <div class="transcript-heading">
+          <h3>Continuous Transcript</h3>
+          <div class="copy-badge" id="copyBadge">Copied!</div>
+        </div>
+        <div id="continuousText"></div>
+      </div>
+      <div id="transcriptHistory" class="transcript-history"></div>
+    </div>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html> 

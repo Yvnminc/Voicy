@@ -1,0 +1,264 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+}
+
+.language-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.language-selector label {
+  margin-right: 0.5rem;
+  font-weight: 500;
+}
+
+.language-selector select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #3498db;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+  background-color: #2980b9;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+#startBtn {
+  background-color: #2ecc71;
+}
+
+#startBtn:hover {
+  background-color: #27ae60;
+}
+
+#pauseBtn {
+  background-color: #f39c12;
+}
+
+#pauseBtn:hover {
+  background-color: #d35400;
+}
+
+#stopBtn {
+  background-color: #e74c3c;
+}
+
+#stopBtn:hover {
+  background-color: #c0392b;
+}
+
+.copy-btn {
+  background-color: #8e44ad;
+}
+
+.copy-btn:hover {
+  background-color: #7d3c98;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.indicator {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #bdc3c7;
+}
+
+.indicator.listening {
+  background-color: #2ecc71;
+  animation: pulse 1.5s infinite;
+}
+
+.indicator.paused {
+  background-color: #f39c12;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+  }
+}
+
+.transcript-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  min-height: 300px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.live-transcript {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 4px;
+  min-height: 60px;
+  margin-bottom: 1rem;
+  color: #e74c3c;
+  font-style: italic;
+}
+
+.continuous-transcript {
+  background-color: #f0f7ff;
+  padding: 1rem;
+  border-radius: 4px;
+  min-height: 100px;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.transcript-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.transcript-heading h3 {
+  color: #3498db;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.copy-badge {
+  background-color: #2ecc71;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+}
+
+.copy-badge.visible {
+  opacity: 1;
+}
+
+#continuousText {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.transcript-history {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 200px;
+  border-top: 1px solid #ecf0f1;
+  padding-top: 1rem;
+}
+
+.transcript-item {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.transcript-item:last-child {
+  border-bottom: none;
+}
+
+.transcript-text {
+  font-size: 1.1rem;
+}
+
+.transcript-time {
+  font-size: 0.8rem;
+  color: #95a5a6;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+} 
