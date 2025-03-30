@@ -17,12 +17,26 @@ const copyBadge = document.getElementById('copyBadge');
 let isRecording = false;
 let isPaused = false;
 let continuousTranscriptText = '';
+let isConnected = false;
 
-// Connect to Socket.io server
-const socket = io();
+// Connect to Socket.io server with proper connection options
+const socket = io({
+  reconnectionAttempts: 5,         // Limit reconnection attempts
+  reconnectionDelay: 1000,         // Start with 1s delay
+  reconnectionDelayMax: 5000,      // Max 5s delay
+  timeout: 10000,                  // Connection timeout
+  transports: ['websocket', 'polling'] // Try WebSocket first, fallback to polling
+});
+
+// Show loading state while connecting
+showConnectionStatus('Connecting to server...', 'connecting');
 
 // Button click event handlers
 startBtn.addEventListener('click', () => {
+  if (!isConnected) {
+    showError('Not connected to server. Please refresh the page.');
+    return;
+  }
   startRecording();
 });
 
@@ -49,6 +63,49 @@ copyBtn.addEventListener('click', () => {
 languageSelect.addEventListener('change', () => {
   changeLanguage(languageSelect.value);
 });
+
+// Connection status
+function showConnectionStatus(message, type) {
+  statusText.textContent = message;
+  statusIndicator.className = 'indicator';
+  if (type === 'connecting') {
+    statusIndicator.classList.add('connecting');
+  } else if (type === 'error') {
+    statusIndicator.classList.add('error');
+  }
+  
+  // Disable buttons until connected
+  if (type !== 'connected') {
+    startBtn.disabled = true;
+    pauseBtn.disabled = true;
+    resumeBtn.disabled = true;
+    stopBtn.disabled = true;
+  }
+}
+
+function showError(message) {
+  console.error(message);
+  const errorMsg = document.createElement('div');
+  errorMsg.className = 'error-message';
+  errorMsg.textContent = message;
+  errorMsg.style.color = 'red';
+  errorMsg.style.padding = '10px';
+  errorMsg.style.marginBottom = '10px';
+  errorMsg.style.backgroundColor = '#ffeeee';
+  errorMsg.style.borderRadius = '4px';
+  
+  // Remove existing error messages
+  document.querySelectorAll('.error-message').forEach(el => el.remove());
+  
+  // Add to top of transcript container
+  const container = document.querySelector('.transcript-container');
+  container.insertBefore(errorMsg, container.firstChild);
+  
+  // Auto-remove after some time
+  setTimeout(() => {
+    errorMsg.remove();
+  }, 5000);
+}
 
 // Recording control functions
 function startRecording() {
@@ -114,14 +171,17 @@ function copyTranscriptToClipboard() {
 // Update UI based on application state
 function updateUI() {
   // Update buttons
-  startBtn.disabled = isRecording;
-  pauseBtn.disabled = !isRecording || isPaused;
-  resumeBtn.disabled = !isPaused;
-  stopBtn.disabled = !isRecording;
+  startBtn.disabled = isRecording || !isConnected;
+  pauseBtn.disabled = !isRecording || isPaused || !isConnected;
+  resumeBtn.disabled = !isPaused || !isConnected;
+  stopBtn.disabled = !isRecording || !isConnected;
   
   // Update status indicator
   statusIndicator.className = 'indicator';
-  if (isRecording && !isPaused) {
+  if (!isConnected) {
+    statusIndicator.classList.add('error');
+    statusText.textContent = 'Disconnected';
+  } else if (isRecording && !isPaused) {
     statusIndicator.classList.add('listening');
     statusText.textContent = 'Listening...';
   } else if (isPaused) {
@@ -185,12 +245,42 @@ function appendToContinuousTranscript(text) {
 // Socket.io event listeners
 socket.on('connect', () => {
   console.log('Connected to server');
+  isConnected = true;
+  showConnectionStatus('Connected', 'connected');
+  updateUI();
+  // Request transcript history once connected
+  socket.emit('getHistory');
+});
+
+socket.on('connect_error', (error) => {
+  console.error('Connection error:', error);
+  isConnected = false;
+  showConnectionStatus('Connection error', 'error');
+  showError(`Connection error: ${error.message}`);
+  updateUI();
 });
 
 socket.on('disconnect', () => {
   console.log('Disconnected from server');
+  isConnected = false;
   isRecording = false;
   isPaused = false;
+  showConnectionStatus('Disconnected', 'error');
+  updateUI();
+});
+
+socket.on('reconnect', (attemptNumber) => {
+  console.log(`Reconnected after ${attemptNumber} attempts`);
+  isConnected = true;
+  showConnectionStatus('Connected', 'connected');
+  updateUI();
+});
+
+socket.on('reconnect_failed', () => {
+  console.error('Failed to reconnect');
+  isConnected = false;
+  showConnectionStatus('Failed to reconnect', 'error');
+  showError('Failed to reconnect to server. Please refresh the page.');
   updateUI();
 });
 
@@ -231,6 +321,8 @@ socket.on('transcription', (data) => {
     } else if (data.text === 'Transcript history cleared') {
       continuousTranscriptText = '';
       continuousText.textContent = '';
+    } else if (data.text.includes('Recording error')) {
+      showError(data.text);
     }
     
     updateUI();
@@ -258,7 +350,4 @@ socket.on('transcriptHistory', (history) => {
       addToTranscriptHistory(item.text, item.timestamp);
     }
   });
-});
-
-// Request initial transcript history
-socket.emit('getHistory'); 
+}); 
