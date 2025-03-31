@@ -11,15 +11,14 @@ Voicy follows a client-server architecture with real-time communication:
 │  (Browser) │                     │  (Node.js) │               │  Speech API     │
 │            │                     │            │               │                 │
 └────────────┘                     └────────────┘               └─────────────────┘
-                                       │    ▲
-                                       │    │
-                                       ▼    │
-                                   ┌────────────┐
-                                   │            │
-                                   │   Audio    │
-                                   │  Capture   │
-                                   │            │
-                                   └────────────┘
+                                       │    ▲                         
+                                       │    │                   ┌─────────────────┐
+                                       ▼    │                   │                 │
+                                   ┌────────────┐      HTTP     │   OpenRouter   │
+                                   │            │◄────REST─────►│   LLM API      │
+                                   │   Audio    │               │                 │
+                                   │  Capture   │               │                 │
+                                   └────────────┘               └─────────────────┘
 ```
 
 ## Key Components
@@ -28,6 +27,7 @@ Voicy follows a client-server architecture with real-time communication:
 - **User Interface**: HTML/CSS for presentation
 - **Client Logic**: JavaScript controlling UI state and Socket.io communication
 - **Real-time Updates**: Socket.io client for receiving transcriptions and status updates
+- **Summary Modal**: Interface for generating and displaying meeting summaries
 
 ### Backend
 - **Server**: Node.js Express application
@@ -36,6 +36,7 @@ Voicy follows a client-server architecture with real-time communication:
   - Primary: `node-record-lpcm16` for audio capture
   - Fallback: Direct process spawning for platform-specific recording tools
 - **Transcription Service**: Google Cloud Speech API client
+- **Summary Generator**: OpenRouter API integration for meeting summaries
 
 ## Communication Patterns
 
@@ -45,6 +46,8 @@ Voicy follows a client-server architecture with real-time communication:
   - `transcription`: Send transcription results to client
   - `getHistory`, `clearHistory`: Manage transcript history
   - `setLanguage`: Change transcription language
+  - `generateSummary`: Request meeting summary generation
+  - `summaryGenerated`: Return generated summary to client
 
 ### Audio Capture Strategy
 - **Platform Detection**: Different recording strategies based on OS
@@ -66,6 +69,15 @@ Voicy follows a client-server architecture with real-time communication:
 3. Continuous transcript is built on the client side
 4. System handles both interim (real-time) and final results differently
 
+### Meeting Summary Generation
+1. User clicks "Generate Summary" button in UI
+2. Frontend sends `generateSummary` event with style preferences
+3. Backend retrieves filtered transcript (system messages removed)
+4. Backend sends transcript to OpenRouter API with appropriate prompt
+5. OpenRouter returns summarized content
+6. Backend sends summary back to frontend via `summaryGenerated` event
+7. Frontend displays summary in modal
+
 ## Design Patterns
 
 ### Observer Pattern
@@ -75,6 +87,7 @@ Voicy follows a client-server architecture with real-time communication:
 ### Strategy Pattern
 - Different audio capture strategies based on platform
 - Interchangeable recording methods with common interface
+- Multiple summary styles with the same interface
 
 ### Factory Pattern
 - Speech API client creates recognition streams with specific configurations
@@ -85,14 +98,21 @@ Voicy follows a client-server architecture with real-time communication:
 - **Recording Recovery**: Restart recording on failure
 - **Stream Restart**: Periodic stream renewal to prevent timeout
 - **User Feedback**: Visual indicators for error states and clear error messages
+- **API Fallbacks**: Graceful handling of external API failures
 
 ## Platform-Specific Considerations
 - **Windows**: Uses SoX with node-record-lpcm16
 - **macOS**: Direct SoX process with file-based streaming
 - **Linux**: Primarily uses arecord with fallback to SoX
 
+## Security Considerations
+- API keys stored in environment variables, not in code
+- No storage of sensitive transcript data
+- Token-based authentication for API calls
+
 ## Future Extension Points
 - Speaker diarization (separating different speakers)
 - Persistent storage for transcriptions
 - Additional language support
-- Enhanced error recovery mechanisms 
+- Enhanced error recovery mechanisms
+- Advanced summary customization options 

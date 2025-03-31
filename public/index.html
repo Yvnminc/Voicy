@@ -3,51 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Voicy - Real-time Transcription</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <title>Voicy - Real-time Speech-to-Text</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Voicy</h1>
-      <p class="subtitle">Real-time Speech-to-Text Transcription</p>
-    </header>
+    <h1>
+      <span class="voicy-text">Voicy</span>
+      <span class="tagline">Real-time Speech-to-Text</span>
+    </h1>
     
-    <div class="language-selector">
-      <label for="language-select">Select Language:</label>
-      <select id="language-select">
-        <option value="en-US" selected>English (US)</option>
-        <option value="zh-CN">Chinese (Simplified)</option>
-      </select>
-    </div>
-    
-    <div class="controls">
-      <button id="startBtn" class="btn">Start</button>
-      <button id="pauseBtn" class="btn" disabled>Pause</button>
-      <button id="resumeBtn" class="btn" disabled>Resume</button>
-      <button id="stopBtn" class="btn" disabled>Stop</button>
-      <button id="clearBtn" class="btn">Clear</button>
-      <button id="copyBtn" class="btn copy-btn">
-        <i class="fas fa-copy"></i> Copy Text
-      </button>
-    </div>
-    
-    <div class="status">
-      <div id="statusIndicator" class="indicator"></div>
-      <span id="statusText">Ready</span>
-    </div>
-    
-    <div class="transcript-container">
-      <div id="liveTranscript" class="live-transcript"></div>
-      <div id="continuousTranscript" class="continuous-transcript">
-        <div class="transcript-heading">
-          <h3>Continuous Transcript</h3>
-          <div class="copy-badge" id="copyBadge">Copied!</div>
-        </div>
-        <div id="continuousText"></div>
+    <div class="main-content">
+      <div class="transcription-section">
+        <h2>Live Transcription</h2>
+        <div id="liveTranscript" class="transcript-display"></div>
       </div>
-      <div id="transcriptHistory" class="transcript-history"></div>
+      
+      <div class="continuous-section">
+        <h2>Continuous Transcript</h2>
+        <div id="continuousText" class="transcript-display continuous-display"></div>
+      </div>
+      
+      <div class="history-section">
+        <h2>Transcript History</h2>
+        <div id="transcriptHistory" class="transcript-display history-display"></div>
+      </div>
+      
+      <div class="controls">
+        <button id="startBtn" class="btn">Start</button>
+        <button id="pauseBtn" class="btn" disabled>Pause</button>
+        <button id="resumeBtn" class="btn" disabled>Resume</button>
+        <button id="stopBtn" class="btn" disabled>Stop</button>
+        <button id="clearBtn" class="btn">Clear</button>
+        <button id="copyBtn" class="btn copy-btn">
+          <i class="fas fa-copy"></i> Copy Text
+        </button>
+        <button id="summaryBtn" class="btn summary-btn">
+          <i class="fas fa-file-alt"></i> Generate Summary
+        </button>
+      </div>
+      
+      <div class="status">
+        <div id="statusIndicator" class="indicator"></div>
+        <span id="statusText">Ready</span>
+        <span id="copyBadge" class="badge">Copied!</span>
+      </div>
+      
+      <div class="language-container">
+        <label for="language-select">Language:</label>
+        <select id="language-select">
+          <option value="zh-CN">Chinese (Simplified)</option>
+          <option value="en-US">English (US)</option>
+          <option value="fr-FR">French</option>
+          <option value="de-DE">German</option>
+          <option value="ja-JP">Japanese</option>
+          <option value="ko-KR">Korean</option>
+          <option value="es-ES">Spanish</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Summary Modal -->
+  <div id="summaryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Meeting Summary</h3>
+        <button class="close-button" id="closeModal">&times;</button>
+      </div>
+      
+      <div class="summary-options">
+        <div class="summary-option-group">
+          <label for="summary-style">Summary Style:</label>
+          <select id="summary-style">
+            <option value="concise">Concise</option>
+            <option value="detailed">Detailed</option>
+            <option value="bullets">Bullet Points</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-body">
+        <div id="summaryContent" class="summary-content">
+          Click "Generate" to create a summary of the transcript.
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <span id="summaryTimestamp" class="modal-timestamp"></span>
+        <div class="modal-buttons">
+          <button id="generateSummaryBtn" class="modal-button copy-summary-btn">Generate</button>
+          <button id="copySummaryBtn" class="modal-button copy-summary-btn">Copy Summary</button>
+        </div>
+      </div>
     </div>
   </div>
   

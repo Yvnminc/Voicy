@@ -10,6 +10,7 @@
 - ✅ Support for changing languages
 - ✅ Error handling for recording issues
 - ✅ Automatic reconnection for speech recognition streams
+- ✅ OpenRouter API integration for meeting summaries
 
 ### Frontend
 - ✅ Basic user interface with recording controls
@@ -21,6 +22,8 @@
 - ✅ Error message display
 - ✅ System message filtering in continuous transcript
 - ✅ Default language set to Chinese
+- ✅ One-click meeting summary button
+- ✅ Summary modal with multiple summary styles
 
 ## In Progress Features
 
@@ -48,6 +51,7 @@
 - ⏳ Visual themes and customization
 - ⏳ Accessibility improvements
 - ⏳ Internationalization of UI elements
+- ⏳ Enhanced summary customization options
 
 ## Known Issues
 
@@ -66,4 +70,5 @@
 2. Finalize Chinese as the default language
 3. Improve error recovery for audio capture
 4. Document Socket.io event API for frontend-backend integration
-5. Add basic unit tests for core components 
+5. Add basic unit tests for core components
+6. Enhance meeting summary functionality with additional options 

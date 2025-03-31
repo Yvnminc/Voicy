@@ -1,7 +1,7 @@
 # Voicy Active Context
 
 ## Current Focus
-The current development focus is on preparing for the integration of the independently developed frontend and backend components, while ensuring that both meet the requirements specified in the PRD.
+The current development focus is on preparing for the integration of the independently developed frontend and backend components, while ensuring that both meet the requirements specified in the PRD. Additionally, planning has begun for implementing a new meeting summary feature.
 
 ## Recent Changes
 1. Modified the continuous transcript display to filter out system messages
@@ -9,6 +9,7 @@ The current development focus is on preparing for the integration of the indepen
 3. Improved error handling in the audio capture process
 4. Added better socket connection management with reconnection logic
 5. Created the memory bank to document the project architecture and requirements
+6. Added planned meeting summary feature to project requirements
 
 ## Current State
 
@@ -38,18 +39,22 @@ The current development focus is on preparing for the integration of the indepen
 2. Ensure Chinese language selection is correctly applied as the default
 3. Test the audio capture system across different platforms
 4. Document the Socket.io events for frontend-backend communication
+5. Design the meeting summary feature architecture
 
 ### Short-term Tasks
 1. Improve error handling and recovery in the audio capture process
 2. Enhance the user interface for better user experience
 3. Optimize the real-time transcription display for performance
 4. Add unit tests for critical components
+5. Implement the OpenRouter API integration for meeting summaries
+6. Create a "Generate Summary" button in the UI
 
 ### Long-term Tasks
 1. Implement persistent storage for transcriptions
 2. Add user authentication and personalization
 3. Explore speaker diarization (identifying different speakers)
 4. Consider adding support for offline transcription
+5. Enhance the meeting summary feature with customization options
 
 ## Active Decisions
 
@@ -58,6 +63,12 @@ The current development focus is on preparing for the integration of the indepen
 - Define clear API contracts for communication
 - Use Socket.io events as the primary integration point
 - Ensure backward compatibility with existing test implementations
+
+### Meeting Summary Feature
+- Use OpenRouter API to access LLM capabilities
+- Implement secure API key management
+- Focus on summarizing the continuous transcript
+- Add customization options for summary length and style
 
 ### User Experience Priorities
 - Connection stability and feedback

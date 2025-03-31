@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
 const Transcriber = require('./transcription');
+const summaryGenerator = require('./summary');
 
 // Initialize express app and server
 const app = express();
@@ -19,7 +21,7 @@ app.get('/', (req, res) => {
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
-  console.log('Client connected');
+  console.log('New client connected');
   
   let transcriber = null;
   
@@ -78,6 +80,48 @@ io.on('connection', (socket) => {
   // Handle clear transcript history command
   socket.on('clearHistory', () => {
     transcriber.clearTranscriptHistory();
+  });
+  
+  // Handle generate summary request
+  socket.on('generateSummary', async (options = {}) => {
+    console.log('Generating summary with options:', options);
+    try {
+      // Get the full transcript from the transcriber
+      const transcriptContent = transcriber.getFullTranscript();
+      
+      if (!transcriptContent || transcriptContent.length === 0) {
+        socket.emit('summaryGenerated', { 
+          success: false,
+          error: 'No transcript content available to summarize.',
+          summary: null
+        });
+        return;
+      }
+      
+      // Generate the summary
+      const summary = await summaryGenerator.generateSummary(
+        transcriptContent, 
+        {
+          language: transcriber.languageCode || 'en',
+          ...options
+        }
+      );
+      
+      // Send back to client
+      socket.emit('summaryGenerated', { 
+        success: true,
+        summary,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Error generating summary:', error);
+      socket.emit('summaryGenerated', { 
+        success: false,
+        error: 'Failed to generate summary: ' + error.message,
+        summary: null
+      });
+    }
   });
   
   // Handle client disconnect

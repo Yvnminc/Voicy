@@ -513,6 +513,41 @@ class Transcriber {
     this.transcriptHistory = [];
     this.onTranscription('Transcript history cleared', true, Date.now(), this.transcriptHistory);
   }
+
+  /**
+   * Returns the full transcript from the history
+   * @returns {string} Full transcript text
+   */
+  getFullTranscript() {
+    if (!this.transcriptHistory || this.transcriptHistory.length === 0) {
+      return '';
+    }
+    
+    // Filter out system messages and join the transcript parts
+    return this.transcriptHistory
+      .filter(item => {
+        // Skip system messages
+        const systemMessages = [
+          'Initializing microphone...',
+          'Listening...',
+          'Paused',
+          'Resumed',
+          'Stopped',
+          'Transcript history cleared',
+          'Failed to start recording'
+        ];
+        
+        return item.text && 
+               item.isFinal &&
+               !systemMessages.some(msg => item.text.includes(msg)) &&
+               !item.text.includes('Error:') &&
+               !item.text.includes('Recording error') &&
+               !item.text.includes('RESTARTING REQUEST') &&
+               item.text.trim() !== '';
+      })
+      .map(item => item.text.trim())
+      .join(' ');
+  }
 }
 
 module.exports = Transcriber; 

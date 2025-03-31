@@ -5,6 +5,7 @@ const resumeBtn = document.getElementById('resumeBtn');
 const stopBtn = document.getElementById('stopBtn');
 const clearBtn = document.getElementById('clearBtn');
 const copyBtn = document.getElementById('copyBtn');
+const summaryBtn = document.getElementById('summaryBtn');
 const statusIndicator = document.getElementById('statusIndicator');
 const statusText = document.getElementById('statusText');
 const liveTranscript = document.getElementById('liveTranscript');
@@ -13,11 +14,21 @@ const transcriptHistory = document.getElementById('transcriptHistory');
 const languageSelect = document.getElementById('language-select');
 const copyBadge = document.getElementById('copyBadge');
 
+// Summary Modal Elements
+const summaryModal = document.getElementById('summaryModal');
+const closeModal = document.getElementById('closeModal');
+const summaryContent = document.getElementById('summaryContent');
+const summaryTimestamp = document.getElementById('summaryTimestamp');
+const summaryStyle = document.getElementById('summary-style');
+const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+const copySummaryBtn = document.getElementById('copySummaryBtn');
+
 // Application state
 let isRecording = false;
 let isPaused = false;
 let continuousTranscriptText = '';
 let isConnected = false;
+let isSummaryGenerating = false;
 
 // Connect to Socket.io server with proper connection options
 const socket = io({
@@ -71,6 +82,72 @@ copyBtn.addEventListener('click', () => {
 
 languageSelect.addEventListener('change', () => {
   changeLanguage(languageSelect.value);
+});
+
+// Summary button click event handlers
+summaryBtn.addEventListener('click', () => {
+  // Open the summary modal
+  summaryModal.style.display = 'block';
+  
+  // Reset the summary content if it was previously generated
+  if (summaryContent.dataset.hasResult === 'true') {
+    summaryContent.textContent = 'Click "Generate" to create a summary of the transcript.';
+    summaryContent.dataset.hasResult = 'false';
+    summaryTimestamp.textContent = '';
+  }
+});
+
+// Close modal when clicking the close button
+closeModal.addEventListener('click', () => {
+  summaryModal.style.display = 'none';
+});
+
+// Close modal when clicking outside the modal content
+window.addEventListener('click', (event) => {
+  if (event.target === summaryModal) {
+    summaryModal.style.display = 'none';
+  }
+});
+
+// Generate summary button click handler
+generateSummaryBtn.addEventListener('click', () => {
+  if (isSummaryGenerating) return;
+  
+  if (!continuousTranscriptText || continuousTranscriptText.trim() === '') {
+    summaryContent.textContent = 'No transcript content available to summarize. Start recording and capture some speech first.';
+    return;
+  }
+  
+  // Show loading state
+  isSummaryGenerating = true;
+  const originalButtonText = generateSummaryBtn.innerHTML;
+  generateSummaryBtn.innerHTML = '<div class="loading-spinner"></div>Generating...';
+  generateSummaryBtn.disabled = true;
+  summaryContent.textContent = 'Generating summary...';
+  
+  // Request summary from the server
+  socket.emit('generateSummary', {
+    style: summaryStyle.value
+  });
+});
+
+// Copy summary button click handler
+copySummaryBtn.addEventListener('click', () => {
+  if (summaryContent.dataset.hasResult !== 'true') return;
+  
+  // Copy summary text to clipboard
+  navigator.clipboard.writeText(summaryContent.textContent)
+    .then(() => {
+      const originalText = copySummaryBtn.textContent;
+      copySummaryBtn.textContent = 'Copied!';
+      
+      setTimeout(() => {
+        copySummaryBtn.textContent = originalText;
+      }, 2000);
+    })
+    .catch(err => {
+      console.error('Failed to copy summary: ', err);
+    });
 });
 
 // Connection status
@@ -385,4 +462,25 @@ socket.on('transcriptHistory', (history) => {
       addToTranscriptHistory(item.text, item.timestamp);
     }
   });
+});
+
+// Socket.io event handlers for summary
+socket.on('summaryGenerated', (data) => {
+  isSummaryGenerating = false;
+  generateSummaryBtn.innerHTML = 'Generate';
+  generateSummaryBtn.disabled = false;
+  
+  if (data.success) {
+    summaryContent.textContent = data.summary;
+    summaryContent.dataset.hasResult = 'true';
+    
+    // Format and display the timestamp
+    if (data.timestamp) {
+      const date = new Date(data.timestamp);
+      summaryTimestamp.textContent = `Generated on ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+    }
+  } else {
+    summaryContent.textContent = data.error || 'Failed to generate summary. Please try again.';
+    summaryContent.dataset.hasResult = 'false';
+  }
 }); 

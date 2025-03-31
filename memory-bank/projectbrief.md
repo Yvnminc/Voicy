@@ -11,6 +11,7 @@ Voicy is a speech-to-text application designed to provide real-time transcriptio
 5. Continuous transcript display (only showing actual user speech, not system messages)
 6. Copy functionality for the transcript
 7. Clear visual feedback on connection and recording status
+8. One-click meeting summary generation
 
 ## Technical Requirements
 1. Node.js backend with Socket.io for real-time communication
@@ -19,20 +20,23 @@ Voicy is a speech-to-text application designed to provide real-time transcriptio
 4. Reliable audio capture across platforms (Windows, macOS, Linux)
 5. Error handling and recovery for audio capture issues
 6. Persistent transcript history during a session
+7. Integration with an LLM API (OpenRouter) for generating meeting summaries
 
 ## Current Status
 - Backend implementation is complete with audio capture and Google Cloud Speech API integration
 - Frontend test interface is in place with basic functionality
 - The frontend and backend are currently being developed independently and will need to be carefully merged
+- Meeting summary feature is planned for upcoming development
 
 ## Limitations
 - Dependency on external recording tools (sox, arecord)
 - Google Cloud Speech API requires credentials and has usage limits
 - Real-time transcription may have latency depending on network conditions
+- Meeting summary quality depends on transcript quality and LLM capabilities
 
 ## Next Steps
 1. Complete frontend development with improved UX
 2. Integrate frontend and backend components
-3. Implement additional features based on user feedback
+3. Implement meeting summary feature using OpenRouter API
 4. Improve error handling and recovery
 5. Add support for additional languages 

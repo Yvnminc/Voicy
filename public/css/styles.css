@@ -1,0 +1,169 @@
+/* Add styling for the summary button */
+.summary-btn {
+  background-color: #6c5ce7;
+  color: white;
+}
+
+.summary-btn:hover {
+  background-color: #5f50d8;
+}
+
+.summary-btn:disabled {
+  background-color: #a29bda;
+  cursor: not-allowed;
+}
+
+/* Modal styles for summary popup */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+  animation: fadeIn 0.3s;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  max-width: 700px;
+  animation: slideDown 0.4s;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+}
+
+.close-button {
+  color: #aaa;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.close-button:hover {
+  color: #555;
+}
+
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+.summary-content {
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  margin-top: 15px;
+}
+
+.modal-timestamp {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.copy-summary-btn {
+  background-color: #4834d4;
+  color: white;
+}
+
+.copy-summary-btn:hover {
+  background-color: #3c2eb5;
+}
+
+.summary-options {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.summary-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.summary-option-group label {
+  font-weight: 500;
+  color: #555;
+}
+
+.summary-option-group select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+} 
