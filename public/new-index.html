@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voicy - Real-time Speech-to-Text</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/new/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-background">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-primary flex items-center gap-2">
+        <i class="fas fa-microphone-alt"></i>
+        Voicy
+        <span class="text-lg font-normal text-text-secondary">Real-time Speech-to-Text</span>
+      </h1>
+    </header>
+    
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Panel - Live Transcription -->
+      <div class="card">
+        <h2 class="text-xl mb-3">Live Transcription</h2>
+        <div id="liveTranscript" class="live-transcript transcript-container min-h-[10rem] p-3 rounded-md bg-gray-50"></div>
+        
+        <!-- Audio Controls -->
+        <div class="mt-4 audio-controls">
+          <button id="startBtn" class="btn btn-primary">
+            <i class="fas fa-play mr-1"></i> Start
+          </button>
+          <button id="pauseBtn" class="btn btn-outline" disabled>
+            <i class="fas fa-pause mr-1"></i> Pause
+          </button>
+          <button id="resumeBtn" class="btn btn-outline" disabled>
+            <i class="fas fa-play-circle mr-1"></i> Resume
+          </button>
+          <button id="stopBtn" class="btn btn-outline" disabled>
+            <i class="fas fa-stop mr-1"></i> Stop
+          </button>
+        </div>
+        
+        <!-- Status Indicators -->
+        <div class="mt-4 flex items-center">
+          <div id="statusIndicator" class="indicator bg-gray-300 mr-2"></div>
+          <span id="statusText" class="text-sm">Ready</span>
+          <span id="copyBadge" class="copy-badge ml-2">Copied!</span>
+        </div>
+        
+        <!-- Language Selector -->
+        <div class="mt-4">
+          <label for="language-select" class="block text-sm font-medium text-text-secondary mb-1">Language:</label>
+          <select id="language-select" class="w-full p-2 border border-gray-300 rounded-md">
+            <option value="zh-CN">Chinese (Simplified)</option>
+            <option value="en-US">English (US)</option>
+            <option value="fr-FR">French</option>
+            <option value="de-DE">German</option>
+            <option value="ja-JP">Japanese</option>
+            <option value="ko-KR">Korean</option>
+            <option value="es-ES">Spanish</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Middle Panel - Continuous Transcript -->
+      <div class="card lg:col-span-2">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xl">Continuous Transcript</h2>
+          <div class="flex gap-2">
+            <button id="clearBtn" class="btn btn-outline text-sm">
+              <i class="fas fa-trash-alt mr-1"></i> Clear
+            </button>
+            <button id="copyBtn" class="btn btn-outline text-sm">
+              <i class="fas fa-copy mr-1"></i> Copy
+            </button>
+          </div>
+        </div>
+        <div id="continuousText" class="continuous-transcript transcript-container p-3 rounded-md bg-gray-50"></div>
+      </div>
+      
+      <!-- Right Panel - History & LLM Access -->
+      <div class="card lg:col-span-3">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xl">Transcript History</h2>
+          <button id="summaryBtn" class="btn btn-secondary text-sm">
+            <i class="fas fa-file-alt mr-1"></i> Generate Summary
+          </button>
+        </div>
+        <div id="transcriptHistory" class="transcript-history transcript-container p-3 rounded-md bg-gray-50"></div>
+        
+        <!-- LLM Access Section -->
+        <div class="mt-4 llm-access">
+          <input type="text" id="messageInput" placeholder="Send to LLM..." class="flex-1 p-2 border border-gray-300 rounded-l-md">
+          <button id="sendToLLM" class="btn btn-primary rounded-l-none">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Summary Modal -->
+  <div id="summaryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold">Meeting Summary</h3>
+        <button class="text-2xl leading-none" id="closeModal">&times;</button>
+      </div>
+      
+      <div class="p-4">
+        <div class="mb-4">
+          <label for="summary-style" class="block text-sm font-medium text-text-secondary mb-1">Summary Style:</label>
+          <select id="summary-style" class="w-full p-2 border border-gray-300 rounded-md">
+            <option value="concise">Concise</option>
+            <option value="detailed">Detailed</option>
+            <option value="bullets">Bullet Points</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-body">
+        <div id="summaryContent" class="p-3 bg-gray-50 rounded-md min-h-[10rem]" data-has-result="false">
+          Click "Generate" to create a summary of the transcript.
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <span id="summaryTimestamp" class="text-sm text-text-muted"></span>
+        <div class="flex gap-2">
+          <button id="generateSummaryBtn" class="btn btn-primary">Generate</button>
+          <button id="copySummaryBtn" class="btn btn-outline">Copy Summary</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="new-app.js"></script>
+</body>
+</html> 

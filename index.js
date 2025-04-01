@@ -5,5 +5,13 @@
  * It starts the server which handles both the transcription and web interface.
  */
 
-// Simply require the server module to start the application
-require('./server'); 
+// Main application entry point
+require('dotenv').config();
+const server = require('./server');
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+server.startServer(PORT).catch(err => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
+}); 

@@ -1,0 +1,417 @@
+/* Modern UI styles for Voicy */
+
+/* Font and base styles */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f8f9fa;
+  color: #333333;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 1.875rem;
+  margin-bottom: 1rem;
+  color: #ff4b4b;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.text-primary {
+  color: #ff4b4b;
+}
+
+.text-secondary {
+  color: #666666;
+}
+
+.text-muted {
+  color: #999999;
+}
+
+/* Layout */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.grid-cols-1 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  
+  .lg\:col-span-2 {
+    grid-column: span 2;
+  }
+  
+  .lg\:col-span-3 {
+    grid-column: span 3;
+  }
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+/* Flexbox utilities */
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+/* Cards */
+.card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  border: 1px solid #f0f0f0;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition: background-color 150ms ease;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: #ff4b4b;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #e03e3e;
+}
+
+.btn-secondary {
+  background-color: #3a86ff;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #2d6fd9;
+}
+
+.btn-outline {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  color: #333333;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: #f9f9f9;
+}
+
+.rounded-l-none {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.rounded-l-md {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+
+/* Form elements */
+input, select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #666666;
+}
+
+/* Transcript containers */
+.transcript-container {
+  background-color: #f9f9f9;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  overflow: auto;
+  min-height: 10rem;
+  max-height: 20rem;
+}
+
+.live-transcript {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.continuous-transcript {
+  height: 20rem;
+}
+
+.transcript-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.transcript-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.transcript-text {
+  flex: 1;
+}
+
+.transcript-time {
+  font-size: 0.875rem;
+  color: #999999;
+  margin-left: 0.5rem;
+}
+
+/* Status indicators */
+.indicator {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: #d1d5db;
+}
+
+.indicator.listening {
+  background-color: #10b981;
+  animation: pulse 2s infinite;
+}
+
+.indicator.paused {
+  background-color: #f59e0b;
+}
+
+.indicator.error {
+  background-color: #ef4444;
+}
+
+.indicator.connecting {
+  background-color: #f59e0b;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Copy badge */
+.copy-badge {
+  position: absolute;
+  background-color: #10b981;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.copy-badge.visible {
+  opacity: 1;
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  display: none;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 42rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-body {
+  padding: 1rem;
+  max-height: 24rem;
+  overflow: auto;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+#closeModal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Additional utility classes */
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.p-3 {
+  padding: 0.75rem;
+}
+
+.min-h-\[10rem\] {
+  min-height: 10rem;
+}
+
+.rounded-md {
+  border-radius: 0.375rem;
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+/* Specific component styles */
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.llm-access {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+} 

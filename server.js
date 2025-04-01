@@ -19,6 +19,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Route for the new UI
+app.get('/new', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'new-index.html'));
+});
+
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -141,6 +146,7 @@ function startServer(port) {
     server.listen(port, () => {
       console.log(`Server running on port ${port}`);
       console.log(`Open http://localhost:${port} in your browser`);
+      console.log(`For the new UI, open http://localhost:${port}/new`);
       resolve(port);
     });
 
@@ -158,11 +164,5 @@ function startServer(port) {
   });
 }
 
-// Initial port
-const PORT = process.env.PORT || 3000;
-
-// Start the server with port conflict handling
-startServer(PORT).catch(err => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-}); 
+// Export the startServer function to be used in index.js
+module.exports = { startServer }; 
