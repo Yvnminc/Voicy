@@ -5,6 +5,7 @@ const socketIo = require('socket.io');
 const path = require('path');
 const Transcriber = require('./transcription');
 const summaryGenerator = require('./summary');
+const aiChat = require('./ai-chat');
 
 // Initialize express app and server
 const app = express();
@@ -87,6 +88,52 @@ io.on('connection', (socket) => {
     transcriber.clearTranscriptHistory();
   });
   
+  // Handle AI chat message
+  socket.on('aiChatMessage', async (data) => {
+    console.log('Received AI chat message:', data.message);
+    
+    try {
+      // Get the transcript content to use as context
+      const transcriptContent = transcriber.getFullTranscript();
+      
+      if (!transcriptContent || transcriptContent.length === 0) {
+        socket.emit('aiChatResponse', {
+          success: false,
+          error: 'No transcript content available for context.',
+          message: data.message,
+          response: null
+        });
+        return;
+      }
+      
+      // Send the request to the AI service
+      const response = await aiChat.generateResponse(
+        transcriptContent,
+        data.message,
+        {
+          language: transcriber.languageCode || 'en'
+        }
+      );
+      
+      // Send the response back to the client
+      socket.emit('aiChatResponse', {
+        success: true,
+        message: data.message,
+        response: response,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Error processing AI chat message:', error);
+      socket.emit('aiChatResponse', {
+        success: false,
+        error: 'Failed to generate AI response: ' + error.message,
+        message: data.message,
+        response: null
+      });
+    }
+  });
+  
   // Handle generate summary request
   socket.on('generateSummary', async (options = {}) => {
     console.log('Generating summary with options:', options);
@@ -119,12 +166,23 @@ io.on('connection', (socket) => {
         timestamp: new Date().toISOString()
       });
       
+      // Also send to the new endpoint for modal display
+      socket.emit('summaryResponse', {
+        summary,
+        timestamp: new Date().toISOString()
+      });
+      
     } catch (error) {
       console.error('Error generating summary:', error);
       socket.emit('summaryGenerated', { 
         success: false,
         error: 'Failed to generate summary: ' + error.message,
         summary: null
+      });
+      
+      // Also send error to the new endpoint
+      socket.emit('summaryResponse', {
+        error: 'Failed to generate summary: ' + error.message
       });
     }
   });

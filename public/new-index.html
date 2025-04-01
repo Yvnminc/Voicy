@@ -83,18 +83,29 @@
       <div class="card lg:col-span-3">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-xl">Transcript History</h2>
-          <button id="summaryBtn" class="btn btn-secondary text-sm">
-            <i class="fas fa-file-alt mr-1"></i> Generate Summary
-          </button>
+          <div class="flex gap-2">
+            <button id="summaryBtn" class="btn btn-secondary text-sm">
+              <i class="fas fa-file-alt mr-1"></i> Generate Summary
+            </button>
+          </div>
         </div>
         <div id="transcriptHistory" class="transcript-history transcript-container p-3 rounded-md bg-gray-50"></div>
         
         <!-- LLM Access Section -->
-        <div class="mt-4 llm-access">
-          <input type="text" id="messageInput" placeholder="Send to LLM..." class="flex-1 p-2 border border-gray-300 rounded-l-md">
-          <button id="sendToLLM" class="btn btn-primary rounded-l-none">
-            <i class="fas fa-paper-plane"></i>
-          </button>
+        <div class="mt-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-medium">AI Chat Assistant</h3>
+          </div>
+          <p class="text-sm text-text-secondary mb-3">
+            Ask questions about the recorded transcript and get AI-powered answers.
+          </p>
+          <div class="llm-access">
+            <input type="text" id="messageInput" placeholder="Ask a question about the transcript content..." class="flex-1 p-2 border border-gray-300 rounded-l-md">
+            <button id="sendToLLM" class="btn btn-primary rounded-l-none">
+              <i class="fas fa-paper-plane mr-1"></i> Send
+            </button>
+          </div>
+          <!-- Chat messages will appear here dynamically -->
         </div>
       </div>
     </main>

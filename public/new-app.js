@@ -26,6 +26,16 @@ const copySummaryBtn = document.getElementById('copySummaryBtn');
 // LLM Integration Elements
 const messageInput = document.getElementById('messageInput');
 const sendToLLM = document.getElementById('sendToLLM');
+const chatContainer = document.createElement('div');
+chatContainer.className = 'chat-container mt-4 p-3 bg-gray-50 rounded-md';
+chatContainer.style.display = 'none';
+chatContainer.style.maxHeight = '300px';
+chatContainer.style.overflowY = 'auto';
+
+// Add the chat container after the transcript history
+if (transcriptHistory) {
+  transcriptHistory.parentNode.insertBefore(chatContainer, transcriptHistory.nextSibling);
+}
 
 // Application state
 let isRecording = false;
@@ -33,6 +43,7 @@ let isPaused = false;
 let continuousTranscriptText = '';
 let isConnected = false;
 let isSummaryGenerating = false;
+let isAIProcessing = false;
 
 // Connect to Socket.io server with improved connection options
 const socket = io({
@@ -133,20 +144,86 @@ generateSummaryBtn.addEventListener('click', () => {
 // LLM Integration
 if (sendToLLM) {
   sendToLLM.addEventListener('click', () => {
-    const message = messageInput.value.trim();
-    if (!message) return;
-    
-    console.log('Sending to LLM:', message);
-    messageInput.value = '';
-    
-    alert('LLM feature coming soon!');
+    sendAIMessage();
   });
+  
+  // Also handle pressing Enter in the input field
+  messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendAIMessage();
+    }
+  });
+}
+
+function sendAIMessage() {
+  const message = messageInput.value.trim();
+  if (!message || isAIProcessing) return;
+  
+  // Show the chat container
+  chatContainer.style.display = 'block';
+  
+  // Add user message to chat
+  addChatMessage('user', message);
+  
+  // Clear the input
+  messageInput.value = '';
+  
+  // Show loading indicator
+  isAIProcessing = true;
+  const loadingMsg = addChatMessage('assistant', '<div class="loading-spinner"></div> Thinking...');
+  
+  // Send to server
+  socket.emit('aiChatMessage', { message });
+}
+
+function addChatMessage(role, content) {
+  const messageElement = document.createElement('div');
+  messageElement.className = `chat-message ${role}-message`;
+  messageElement.style.marginBottom = '10px';
+  messageElement.style.padding = '8px 12px';
+  messageElement.style.borderRadius = '8px';
+  messageElement.style.maxWidth = '80%';
+  
+  if (role === 'user') {
+    messageElement.style.backgroundColor = '#ff4b4b';
+    messageElement.style.color = 'white';
+    messageElement.style.alignSelf = 'flex-end';
+    messageElement.style.marginLeft = 'auto';
+  } else {
+    messageElement.style.backgroundColor = '#3a86ff';
+    messageElement.style.color = 'white';
+    messageElement.style.alignSelf = 'flex-start';
+    messageElement.style.marginRight = 'auto';
+  }
+  
+  messageElement.innerHTML = content;
+  chatContainer.appendChild(messageElement);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  
+  return messageElement;
 }
 
 // Error Handling
 function showError(message) {
   console.error(message);
-  alert(message);
+  
+  // Create and style error message
+  const errorElement = document.createElement('div');
+  errorElement.className = 'error-message';
+  errorElement.textContent = message;
+  errorElement.style.backgroundColor = '#ffeeee';
+  errorElement.style.color = '#ff4b4b';
+  errorElement.style.padding = '10px';
+  errorElement.style.borderRadius = '4px';
+  errorElement.style.marginBottom = '10px';
+  
+  // Add to beginning of body
+  document.body.insertBefore(errorElement, document.body.firstChild);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    errorElement.remove();
+  }, 5000);
 }
 
 // Recording Functions
@@ -182,6 +259,10 @@ function clearTranscript() {
   transcriptHistory.innerHTML = '';
   continuousTranscriptText = '';
   continuousText.textContent = '';
+  
+  // Also clear chat
+  chatContainer.innerHTML = '';
+  chatContainer.style.display = 'none';
 }
 
 function changeLanguage(languageCode) {
@@ -192,7 +273,7 @@ function copyTranscriptToClipboard() {
   const textToCopy = continuousText.textContent;
   
   if (!textToCopy) {
-    alert('No text to copy.');
+    showError('No text to copy.');
     return;
   }
   
@@ -205,7 +286,7 @@ function copyTranscriptToClipboard() {
     })
     .catch(err => {
       console.error('Failed to copy: ', err);
-      alert('Failed to copy text: ' + err);
+      showError('Failed to copy text: ' + err);
     });
 }
 
@@ -299,6 +380,15 @@ socket.on('connect', () => {
   showConnectionStatus('Connected', 'connected');
   updateUI();
   
+  // Enable control buttons
+  startBtn.disabled = false;
+  clearBtn.disabled = false;
+  
+  // Disable pause/resume/stop buttons until recording starts
+  pauseBtn.disabled = true;
+  resumeBtn.disabled = true;
+  stopBtn.disabled = true;
+  
   // Set language and request history
   socket.emit('setLanguage', 'zh-CN');
   socket.emit('getHistory');
@@ -353,6 +443,22 @@ socket.on('transcriptHistory', (history) => {
   }
 });
 
+socket.on('aiChatResponse', (data) => {
+  isAIProcessing = false;
+  
+  // Remove the loading message (last message in the container)
+  const loadingMessage = chatContainer.lastChild;
+  if (loadingMessage) {
+    chatContainer.removeChild(loadingMessage);
+  }
+  
+  if (data.error) {
+    addChatMessage('assistant', `Error: ${data.error}`);
+  } else {
+    addChatMessage('assistant', data.response);
+  }
+});
+
 socket.on('summaryGenerated', (data) => {
   isSummaryGenerating = false;
   generateSummaryBtn.innerHTML = 'Generate';
@@ -368,5 +474,18 @@ socket.on('summaryGenerated', (data) => {
     }
   } else {
     summaryContent.textContent = data.error || 'Failed to generate summary.';
+  }
+});
+
+socket.on('summaryResponse', (data) => {
+  isSummaryGenerating = false;
+  generateSummaryBtn.innerHTML = 'Generate Summary';
+  generateSummaryBtn.disabled = false;
+  
+  if (data.error) {
+    summaryContent.textContent = `Error: ${data.error}`;
+  } else {
+    summaryContent.textContent = data.summary;
+    summaryTimestamp.textContent = `Generated: ${new Date().toLocaleString()}`;
   }
 }); 

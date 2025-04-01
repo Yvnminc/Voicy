@@ -5,6 +5,7 @@ const fetch = require('node-fetch');
 class SummaryGenerator {
   constructor() {
     this.apiKey = process.env.OPENROUTER_API_KEY;
+    
     if (!this.apiKey) {
       console.warn('Warning: OPENROUTER_API_KEY not found in environment variables');
     }
